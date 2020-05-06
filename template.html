@@ -1,4 +1,34 @@
 <html lang="en">
+  <!--
+    Copyright (c) Bruno Braga and individual contributors.
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification,
+    are permitted provided that the following conditions are met:
+
+        1. Redistributions of source code must retain the above copyright notice,
+          this list of conditions and the following disclaimer.
+
+        2. Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+
+        3. Neither the name of Django nor the names of its contributors may be used
+          to endorse or promote products derived from this software without
+          specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+    ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  -->
 <head>
   <script type="text/javascript">
 
@@ -12,7 +42,11 @@
     /*
     The number of columns for the split screen.
 
-    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`.
+    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`. So keep in mind:
+
+      - value should be an integer number higher than 0 (zero)
+      - the larger the number, the smaller the space available to load a page (some sites will be responsive to space, 
+        which might change the expected experience - if you need this, consider changing the browser **zoom** settings)
 
     @type {number}
 
@@ -24,6 +58,10 @@
     The number of rows for the split screen.
 
     Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`.
+
+      - value should be an integer number higher than 0 (zero)
+      - the larger the number, the smaller the space available to load a page (some sites will be responsive to space, 
+        which might change the expected experience - if you need this, consider changing the browser **zoom** settings)
 
     @type {number}
 
@@ -67,8 +105,18 @@
     var DATASET = [
       {
         'url': 'https://www.bing.com',
-        'refresh': 0,
-        'frame': -1
+        'refresh': 0, /* refresh rate in seconds (zero means to remain static) */
+        'frame': -1 /* '-1' means this URL will be randomly selected to load on a frame without any fixed URLs. You can add as many URLs without frames as you like. */
+      },
+      {
+        'url': 'https://www.ubuntu.com',
+        'refresh': 0, /* refresh rate in seconds (zero means to remain static) */
+        'frame': -1 /* '-1' means this URL will be randomly selected to load on a frame without any fixed URLs. You can add as many URLs without frames as you like. */
+      },
+      {
+        'url': 'https://www.linux.com',
+        'refresh': 0, /* refresh rate in seconds (zero means to remain static) */
+        'frame': 0 /* Fixes this URL to the frame[0] */
       },
     ];
 
