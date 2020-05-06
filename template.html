@@ -1,0 +1,215 @@
+<html lang="en">
+<head>
+  <script type="text/javascript">
+
+    /*
+    The page title that is displayed by the web browser.
+
+    @type {string}
+   */
+    var TITLE = 'Simple Web-browser Split Screen';
+
+    /*
+    The number of columns for the split screen.
+
+    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`.
+
+    @type {number}
+
+    @seealso `ROWS`
+    */
+    var COLUMNS = 2;
+
+    /*
+    The number of rows for the split screen.
+
+    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`.
+
+    @type {number}
+
+    @seealso `COLUMNS`
+    */
+    var ROWS = 2;
+
+    /*
+    The main dataset used to load the frames on screen in a split screen style.
+
+    @property {string} url
+                  the URL address to point a particular frame to.
+                  Note: watch out for browser security settings, such as X-Frame-Options, 
+                        or loading issues with the server, which impact the frame output
+
+    @property {number} refresh
+                  determines the rate of refresh, in seconds, forced by this page.
+                  Use zero (0) for no refresh. 
+        
+    @property {number} frame
+                  determines the frame number to which you want the URL to be always displayed on.
+                  Note: You can only set a single fixed frame in this dataset.
+                  Use negative one (-1) to ignore fixing the URL to any particular frame.
+                  In this case, if a frame has no fixed URL, it will randomly select any of '-1' available.
+                  If you combine the REFRESH property with this, you will get an experience that every X seconds
+                  the website may be a different one (random).
+
+                  Frame position numbers are described below (R - rows, C - columns):
+                  |-----------|-----------|------------|---------------|
+                  | 0*R+0     | 1*R+0     | ..*R+0     | (C-1)*R+0     |
+                  | 0*R+1     | 1*R+1     | ..*R+1     | (C-1)*R+1     |
+                  | 0*R+..    | 1*R+..    | ..*R+..    | (C-1)*R+..    |
+                  | 0*R+(R-1) | 1*R+(R-1) | ..*R+(R-1) | (C-1)*R+(R-1) |
+                  |-----------|-----------|------------|---------------|
+
+                  See the function `checkFrameSetup` for a representation of this output based on your specified settings.
+
+    @type {Array.{}}
+
+    */
+    var DATASET = [
+      {
+        'url': 'https://www.bing.com',
+        'refresh': 0,
+        'frame': -1
+      },
+    ];
+
+    /*
+    ===========================================================================
+    MAIN CODE - DO NOT CHANGE ANYTHING HERE (unless you know what you are doing)
+    ===========================================================================
+    */
+
+    /*
+    Outputs the structure of the frames (number positions) to help desgin the dataset used to load URLs. 
+    The numbers start with zero (e.g. 10 columns mean numbers from 0-9.)
+
+    Note: This relies on the global vars `COLUMNS` and `ROWS`.
+    
+    @return undefined Outputs to Console (use your browser Dev tools)
+    */
+    function checkFrameSetup() {
+      var t={};
+      for(var r = 0; r < ROWS; r++) {
+        var l = {};
+        for(var c = 0; c < COLUMNS; c++) {
+            l['Col ' + (c + 1)] = c * ROWS + r;
+        }
+        t['Row ' + (r + 1)] = l;
+      }
+      console.table(t);
+    }
+
+    /*
+    Loads a specified frame with a specific URL, which can be derived from two scenarios:
+      (a) The frame and URL are specified in the `DATASET` object, with a specific frame number set in the `frame` property; or
+      (b) If URLs with no specific frame number are available (i.e. `frame` property is set to `-1` value), a random one will be selected.
+
+    Once a URL is selected, it will load in the specific frame position, and setup the refresh rate if specified in the property `refresh`. 
+
+    @param {number} the frame number to be loaded with a specific URL
+    
+    @return undefined
+
+    @seealso `DATASET` object and documentation.
+    */
+    function loadFrame(frameId) {
+
+      var page;
+
+      // check for a fixed page for the current frame
+      var fixedPages = DATASET.filter(a => a.frame == frameId);
+
+      if (fixedPages.length > 1) 
+        throw 'Error with pages object. the [frame] property must be unique, if set. Use -1 instead if you do not want to fix it.';
+
+      if (fixedPages.length == 0) {
+        // no fixed URLs found, just randomise the available URLs
+
+        // select any non fixed URLs
+        var nonFixedPages = DATASET.filter(a => a.frame == -1);
+
+        // randomly pick one available
+        var chosen = Math.floor((Math.random() * nonFixedPages.length));
+        page = nonFixedPages[chosen];
+      }
+      else {
+        // there is a fixed page for this frame so use it
+        page = fixedPages[0];
+      }
+
+      // Validate
+      if (page == undefined) {
+        console.warn('No details provided for frame [' + frameId + '], and no dynamic links available. Ignoring... :-(');
+        return;
+      }
+
+      if (page.url == undefined) {
+        console.warn('No URL provided to frame [' + frameId + ']. Ignoring...');
+        return;
+      }
+
+      // load the frame
+      console.log('Loading frame [' + frameId + '] with URL [' + page.url + '].');
+      top.frames[frameId].location.href= page.url;
+      if (!top.frames[frameId].location)
+        console.error('This URL [' + page.url + '] does not allow cross-site/domain frame loading (see X-Frame-Options Error).');
+
+      // schedule the next refresh, if applicable
+      if (page.refresh > 0) {
+        console.log('Scheduling frame [' + frameId + '] in [' + page.refresh + '] seconds.')
+        setTimeout(function(){ 
+          loadFrame(frameId); 
+        }, page.refresh * 1000);
+      }
+    }
+
+    /*
+    Starting point of the application. This will:
+
+      - build the frames under the <HEAD> tag of the page's HTML
+      - call the `loadFrame` function for each cell in the frameset
+        
+    @return undefined
+
+    @seealso `loadFrame` object and documentation.
+    */
+    function init() {
+
+      // Rename page Title
+      document.title = TITLE;
+
+      // helper function to build the required frameset sizing structure
+      var _star = function(size) {
+        var temp = [];
+        for(var i = 0; i < size; i++) temp.push('*');
+        return temp.join(',');
+      }
+
+      // create the main frameset 
+      var f = document.getElementsByTagName('html')[0].appendChild(document.createElement('frameset'));
+      f.cols = _star(COLUMNS);
+      f.framespacing = '0';
+      f.border = '1';
+      if (ROWS > 1 || COLUMNS > 1) f.border = '3';
+
+      // create the underlying frames based on specified rows and columns
+      for(var i = 0; i < COLUMNS; i++) {
+        var col = f.appendChild(document.createElement('frameset'));
+        col.rows = _star(ROWS);
+        for(var j = 0; j < ROWS; j++) {
+          var row = col.appendChild(document.createElement('frame'));
+          row.id = i + '-' + j;
+        }
+      }
+
+      // call the frame loading for each on of the cells in the split screen matrix.
+      for(var i = 0; i < ROWS * COLUMNS; i++) loadFrame(i);
+    }
+
+    // Application starts here
+    init();
+
+  </script>  
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+</html>
