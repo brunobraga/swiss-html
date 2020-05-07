@@ -53,11 +53,13 @@ Change this to whatever you like.
     /*
     The number of columns for the split screen.
 
-    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`. So keep in mind:
+    Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`. 
+          So keep in mind:
 
       - value should be an integer number higher than 0 (zero)
-      - the larger the number, the smaller the space available to load a page (some sites will be responsive to space, 
-        which might change the expected experience - if you need this, consider changing the browser **zoom** settings)
+      - the larger the number, the smaller the space available to load a page (some sites will be responsive 
+        to space, which might change the expected experience - if you need this, consider changing the browser 
+        **zoom** settings)
 
     @type {number}
 
@@ -78,8 +80,9 @@ Change this with attention to the documentation above.
     Note: The total number of cells in the split screen matrix (frameset) is defined by `ROWS` x `COLUMNS`.
 
       - value should be an integer number higher than 0 (zero)
-      - the larger the number, the smaller the space available to load a page (some sites will be responsive to space, 
-        which might change the expected experience - if you need this, consider changing the browser **zoom** settings)
+      - the larger the number, the smaller the space available to load a page (some sites will be responsive 
+        to space, which might change the expected experience - if you need this, consider changing the browser 
+        **zoom** settings)
         
     @type {number}
 
@@ -121,7 +124,8 @@ Change this with attention to the documentation above.
                   | 0*R+(R-1) | 1*R+(R-1) | ..*R+(R-1) | (C-1)*R+(R-1) |
                   |-----------|-----------|------------|---------------|
 
-                  See the function `checkFrameSetup` for a representation of this output based on your specified settings.
+                  See the function `checkFrameSetup` for a representation of this output based on your 
+                  specified settings.
 
     @type {Array.{}}
 
